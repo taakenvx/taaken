@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>taaken — frontend dev</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Scanlines overlay -->
+  <div id="scanlines" aria-hidden="true"></div>
+
+  <!-- Language toggle -->
+  <div id="lang-toggle" role="group" aria-label="Language selector">
+    <button class="lang-btn active" id="btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <main id="root">
+
+    <!-- ════════════════════ HEADER ════════════════════ -->
+    <header class="reveal">
+
+      <!-- Status -->
+      <div class="status-badge">
+        <div class="pulse-ring" aria-hidden="true"></div>
+        <span data-pt="DISPONÍVEL_PARA_PROJETOS" data-en="AVAILABLE_FOR_PROJECTS">
+          DISPONÍVEL_PARA_PROJETOS
+        </span>
+      </div>
+
+      <!-- Name + Typewriter -->
+      <div>
+        <div class="hero-name-wrap">
+          <h1 class="hero-name" data-text="TAAKEN">TAAKEN</h1>
+        </div>
+        <div class="hero-desc-wrap" aria-live="polite" aria-atomic="true">
+          <span class="tw-prefix">~/</span>
+          <span id="tw-text"></span><span class="tw-cursor" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <!-- Social links -->
+      <nav class="socials" aria-label="Social links">
+
+        <a href="https://github.com/taakenvx" target="_blank" rel="noopener noreferrer" class="social-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+          GitHub
+        </a>
+
+        <a href="https://discord.com/users/944982637754318928" target="_blank" rel="noopener noreferrer" class="social-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+          </svg>
+          Discord
+        </a>
+
+        <a href="https://www.tiktok.com/@t4aken" target="_blank" rel="noopener noreferrer" class="social-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
+          </svg>
+          TikTok
+        </a>
+
+        <a href="mailto:taaken.contato@gmail.com" class="social-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          <span data-pt="E-mail" data-en="Email">E-mail</span>
+        </a>
+
+      </nav>
+    </header>
+
+    <!-- ════════════════════ ABOUT ════════════════════ -->
+    <section class="reveal" aria-labelledby="about-lbl">
+      <p class="sec-label" id="about-lbl">
+        <span data-pt="// sobre" data-en="// about">// sobre</span>
+      </p>
+      <p class="about-text"
+         data-pt="Desenvolvedor frontend de <strong>nível intermediário</strong>, construindo com <strong>React</strong> e <strong>Next.js</strong>. Estou expandindo meu stack em direção ao full-stack — explorando <strong>Node.js</strong>, <strong>Python</strong> e banco de dados. Acredito em código limpo, boas interfaces e nunca parar de aprender."
+         data-en="Intermediate-level frontend developer building with <strong>React</strong> and <strong>Next.js</strong>. Expanding toward full-stack — exploring <strong>Node.js</strong>, <strong>Python</strong> and databases. I believe in clean code, good interfaces and never stopping to learn.">
+        Desenvolvedor frontend de <strong>nível intermediário</strong>, construindo com <strong>React</strong> e <strong>Next.js</strong>. Estou expandindo meu stack em direção ao full-stack — explorando <strong>Node.js</strong>, <strong>Python</strong> e banco de dados. Acredito em código limpo, boas interfaces e nunca parar de aprender.
+      </p>
+    </section>
+
+    <!-- ════════════════════ STACK ════════════════════ -->
+    <section class="reveal" aria-labelledby="stack-lbl">
+      <p class="sec-label" id="stack-lbl"><span>// stack</span></p>
+
+      <div class="skills-grid" role="list">
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>React</div>
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>Next.js</div>
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>JavaScript</div>
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>TypeScript</div>
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>HTML / CSS</div>
+        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>Git + GitHub</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Node.js</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Python</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Django / Flask</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>PostgreSQL</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Docker</div>
+        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>FastAPI</div>
+      </div>
+
+      <div class="skill-legend">
+        <span>
+          <div class="leg-dot" style="background:var(--accent)"></div>
+          <span data-pt="dominando" data-en="proficient">dominando</span>
+        </span>
+        <span>
+          <div class="leg-dot" style="background:var(--yellow)"></div>
+          <span data-pt="aprendendo" data-en="learning">aprendendo</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- ════════════════════ PROJECTS ════════════════════ -->
+    <section class="reveal" aria-labelledby="projects-lbl">
+      <p class="sec-label" id="projects-lbl">
+        <span data-pt="// projetos" data-en="// projects">// projetos</span>
+      </p>
+
+      <a href="https://taakenvx.github.io/trabalho-escolar/" target="_blank" rel="noopener noreferrer"
+         class="project-card" aria-label="Mundos Além do Horizonte">
+        <div class="project-glint" aria-hidden="true"></div>
+        <div class="project-top">
+          <span class="project-badge">HTML · CSS · JS</span>
+          <svg class="project-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M7 17L17 7M17 7H7M17 7v10"/>
+          </svg>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Mundos Além do Horizonte</h3>
+          <p class="project-desc"
+             data-pt="Site educacional sobre África do Sul, Austrália e Nova Zelândia. Linha do tempo interativa, seções de cultura, animais icônicos e personalidades de cada país."
+             data-en="Educational website about South Africa, Australia and New Zealand. Interactive timeline, culture sections, iconic animals and famous personalities from each country.">
+            Site educacional sobre África do Sul, Austrália e Nova Zelândia. Linha do tempo interativa, seções de cultura, animais icônicos e personalidades de cada país.
+          </p>
+          <div class="project-stack">
+            <span class="stack-pill">HTML</span>
+            <span class="stack-pill">CSS</span>
+            <span class="stack-pill">JavaScript</span>
+            <span class="stack-pill">Responsive</span>
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <!-- ════════════════════ CONTACT ════════════════════ -->
+    <section class="reveal" aria-labelledby="contact-lbl">
+      <p class="sec-label" id="contact-lbl">
+        <span data-pt="// contato" data-en="// contact">// contato</span>
+      </p>
+
+      <div class="contact-grid">
+
+        <a href="https://github.com/taakenvx" target="_blank" rel="noopener noreferrer" class="contact-item">
+          <div class="contact-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-sub">@taakenvx</div>
+          </div>
+        </a>
+
+        <a href="https://discord.com/users/944982637754318928" target="_blank" rel="noopener noreferrer" class="contact-item">
+          <div class="contact-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-label">Discord</div>
+            <div class="contact-sub">@taaken</div>
+          </div>
+        </a>
+
+        <a href="https://www.tiktok.com/@t4aken" target="_blank" rel="noopener noreferrer" class="contact-item">
+          <div class="contact-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-label">TikTok</div>
+            <div class="contact-sub">@t4aken</div>
+          </div>
+        </a>
+
+        <a href="mailto:taaken.contato@gmail.com" class="contact-item">
+          <div class="contact-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-sub">taaken.contato@gmail.com</div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p class="footer-txt" data-pt="sys.uptime: <span class='hl'>sempre aprendendo</span>" data-en="sys.uptime: <span class='hl'>always learning</span>">
+      sys.uptime: <span class="hl">sempre aprendendo</span>
+    </p>
+    <p class="footer-txt">taaken © 2026</p>
+  </footer>
+
+  <!-- Script (deferred so DOM is ready) -->
+  <script src="script.js" defer></script>
+
+</body>
+</html>
