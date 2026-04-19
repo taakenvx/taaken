@@ -19,15 +19,15 @@ const CONFIG = {
   // --- BACKGROUND DA PÁGINA ---
   // Cole uma URL de vídeo (.mp4, .webm) OU de imagem. Vídeo tem prioridade.
   // videoUrl: "https://cdn.example.com/bg.mp4",
-  videoUrl: "./banners/tokyoghoul.mp4",
+  videoUrl: "./banners/rain.mp4",
 
   // --- BANNER (topo do card) ---
   // Pode ser imagem ou vídeo
-  bannerUrl: "./banners/rain.gif",
+  bannerUrl: "./banners/as.jpeg",
   // bannerVideoUrl: "https://cdn.example.com/banner.mp4",
 
   // --- AVATAR ---
-  avatarUrl: "./banners/pfp.jpeg",
+  avatarUrl: "./banners/eyes.jpeg",
 
   // --- MÚSICA ---
   // URL direta de um .mp3 — toca no primeiro clique do usuário na página
