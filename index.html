@@ -1,233 +1,734 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>taaken — frontend dev</title>
+  <title>taaken</title>
+  <meta name="description" content="taaken — web developer" />
+  <link rel="icon" href="https://github.com/taakenvx.png" />
 
-  <!-- Fonts -->
+  <!-- Bodoni Moda (Vogue aesthetic) for name only -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* =============================================
+       TOKENS
+    ============================================= */
+    :root {
+      --bg:           #050505;
+      --surface:      rgba(255,255,255,0.035);
+      --surface-2:    rgba(255,255,255,0.065);
+      --border:       rgba(255,255,255,0.08);
+      --border-2:     rgba(255,255,255,0.15);
+      --text:         #f0f0f0;
+      --muted:        rgba(240,240,240,0.38);
+      --muted-2:      rgba(240,240,240,0.58);
+      --green:        #3ba55c;
+      --font:         'JetBrains Mono', monospace;
+      --font-display: 'Bodoni Moda', Georgia, serif;
+    }
+
+    /* =============================================
+       RESET
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       BACKGROUND
+    ============================================= */
+    #bg-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #bg-video, #bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    #bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.74);
+    }
+
+    #bg-blur-layer {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(3px);
+    }
+
+    /* =============================================
+       GRAIN
+    ============================================= */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px;
+    }
+
+    /* =============================================
+       MUSIC BUTTON
+    ============================================= */
+    #music-btn {
+      position: fixed;
+      top: 1.1rem; right: 1.1rem;
+      z-index: 200;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border-2);
+      background: rgba(10,10,10,0.75);
+      backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--muted-2);
+      transition: background .2s, color .2s;
+    }
+    #music-btn:hover { background: var(--surface-2); color: #fff; }
+    #music-btn svg { width: 15px; height: 15px; }
+    #music-btn.active { color: #fff; border-color: rgba(255,255,255,0.28); }
+    #music-btn.active::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.14);
+      animation: pulse-ring 1.9s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%   { transform: scale(1); opacity: .5; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    /* =============================================
+       CARD
+    ============================================= */
+    .page {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .card {
+      background: rgba(6,6,6,0.85);
+      backdrop-filter: blur(40px) saturate(140%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 .5px rgba(255,255,255,0.04),
+        0 24px 72px rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      animation: fadeUp .65s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =============================================
+       BANNER
+    ============================================= */
+    .banner-wrap {
+      position: relative;
+      height: 108px;
+      overflow: hidden;
+      background: #111;
+    }
+    .banner-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: brightness(.5) saturate(.6);
+    }
+    .banner-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: linear-gradient(to bottom, transparent, rgba(6,6,6,.92));
+    }
+
+    /* =============================================
+       CARD BODY
+    ============================================= */
+    .card-body { padding: 0 1.6rem 1.6rem; }
+
+    /* =============================================
+       AVATAR
+    ============================================= */
+    .avatar-row { margin-top: -36px; margin-bottom: .9rem; }
+
+    .avatar-img {
+      width: 78px; height: 78px;
+      border-radius: 50%;
+      border: 3px solid rgba(6,6,6,1);
+      object-fit: cover;
+      display: block;
+      background: #111;
+    }
+
+    /* =============================================
+       NAME + STATUS
+    ============================================= */
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: .45rem;
+    }
+
+    .username {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      line-height: 1;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(255,255,255,0.5),
+        0 0 50px rgba(255,255,255,0.18),
+        0 0 100px rgba(255,255,255,0.08);
+    }
+
+    .status-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px rgba(59,165,92,.7);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* =============================================
+       TAGLINE (fade cycle, no typewriter)
+    ============================================= */
+    .tagline {
+      font-size: .7rem;
+      color: var(--muted-2);
+      letter-spacing: .03em;
+      min-height: 1.1em;
+      margin-bottom: .9rem;
+    }
+
+    .tagline-item {
+      display: none;
+      animation: tagFade .45s cubic-bezier(.16,1,.3,1) both;
+    }
+    .tagline-item.active { display: inline; }
+
+    @keyframes tagFade {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =============================================
+       BADGES
+    ============================================= */
+    .badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 1.1rem;
+    }
+
+    .badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: .62rem;
+      font-family: var(--font);
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      background: var(--surface);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .badge svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    /* ── Verified: holographic light-reflection ── */
+    .badge.verified {
+      color: #93c5fd;
+      border-color: rgba(147,197,253,.22);
+      background: rgba(147,197,253,0.05);
+    }
+    /* Sweep of light */
+    .badge.verified::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -80%;
+      width: 55%;
+      height: 100%;
+      background: linear-gradient(
+        108deg,
+        transparent 20%,
+        rgba(255,255,255,0.6) 40%,
+        rgba(200,230,255,0.4) 50%,
+        transparent 70%
+      );
+      transform: skewX(-18deg);
+      animation: light-sweep 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes light-sweep {
+      0%   { left: -80%; opacity: 0; }
+      8%   { opacity: 1; }
+      44%  { left: 130%; opacity: 1; }
+      45%  { opacity: 0; }
+      100% { left: 130%; opacity: 0; }
+    }
+    /* Iridescent edge glow */
+    .badge.verified::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        rgba(147,197,253,0) 0%,
+        rgba(196,181,253,0.1) 35%,
+        rgba(147,197,253,0.14) 65%,
+        rgba(167,243,208,0.07) 100%
+      );
+      background-size: 200% 100%;
+      animation: iridescent 3.8s ease infinite;
+    }
+    @keyframes iridescent {
+      0%   { background-position: 0% 0%; }
+      50%  { background-position: 100% 0%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .badge.dev     { color: #86efac; border-color: rgba(134,239,172,.2); background: rgba(134,239,172,0.04); }
+    .badge.og      { color: #fcd34d; border-color: rgba(252,211,77,.2);  background: rgba(252,211,77,0.04); }
+    .badge.premium { color: #c084fc; border-color: rgba(192,132,252,.2); background: rgba(192,132,252,0.04); }
+    .badge.owner   { color: #fb923c; border-color: rgba(251,146,60,.2);  background: rgba(251,146,60,0.04); }
+
+    /* =============================================
+       DIVIDER
+    ============================================= */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1rem 0;
+    }
+
+    /* =============================================
+       VIEWS BOX
+    ============================================= */
+    .views-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 1rem;
+    }
+    .views-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+    }
+    .views-left svg { width: 13px; height: 13px; }
+    .views-label {
+      font-size: .63rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .views-num {
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+
+    /* =============================================
+       SOCIAL ICON BUTTONS
+    ============================================= */
+    .socials-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .soc-btn {
+      position: relative;
+      width: 54px; height: 54px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      color: var(--muted-2);
+      transition: background .2s, border-color .2s, transform .18s cubic-bezier(.16,1,.3,1), box-shadow .18s;
+      overflow: visible;
+    }
+
+    .soc-btn svg {
+      width: 22px; height: 22px;
+      position: relative; z-index: 1;
+      transition: transform .18s ease, color .18s;
+    }
+
+    .soc-btn:hover {
+      background: var(--surface-2);
+      border-color: var(--border-2);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.55);
+    }
+
+    .soc-btn:hover svg { transform: scale(1.08); }
+
+    /* Brand accent on hover */
+    .soc-btn.github:hover  { color: #fff; }
+    .soc-btn.discord:hover { color: #7289da; }
+    .soc-btn.tiktok:hover  { color: #fff; }
+    .soc-btn.mail:hover    { color: #ea4335; }
+
+    /* Tooltip */
+    .soc-btn::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: -22px;
+      left: 50%; transform: translateX(-50%) translateY(2px);
+      font-size: .59rem;
+      font-family: var(--font);
+      letter-spacing: .05em;
+      color: var(--muted);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .15s, transform .15s;
+      pointer-events: none;
+    }
+
+    .soc-btn:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* =============================================
+       CARD FOOTER
+    ============================================= */
+    .card-foot {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .58rem;
+      color: var(--muted);
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 440px) {
+      .card-body  { padding: 0 1.25rem 1.25rem; }
+      .username   { font-size: 1.7rem; }
+      .avatar-img { width: 68px; height: 68px; }
+    }
+
+    /* =============================================
+       REDUCED MOTION
+    ============================================= */
+    @media (prefers-reduced-motion: reduce) {
+      .card                  { animation: none; opacity: 1; }
+      .tagline-item          { animation: none; }
+      .badge.verified::before,
+      .badge.verified::after,
+      #music-btn.active::before { animation: none; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Scanlines overlay -->
-  <div id="scanlines" aria-hidden="true"></div>
+  <!-- MUSIC -->
+  <audio id="bg-music" loop preload="none"></audio>
+  <button id="music-btn" aria-label="Toggle music" title="Music">
+    <svg id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+    </svg>
+    <svg id="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </svg>
+  </button>
 
-  <!-- Language toggle -->
-  <div id="lang-toggle" role="group" aria-label="Language selector">
-    <button class="lang-btn active" id="btn-pt" onclick="setLang('pt')">PT</button>
-    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  <!-- BACKGROUND -->
+  <div id="bg-wrap" aria-hidden="true">
+    <video id="bg-video" autoplay muted loop playsinline></video>
+    <img   id="bg-image" alt="" />
+    <div   id="bg-overlay"></div>
+    <div   id="bg-blur-layer"></div>
   </div>
 
-  <main id="root">
+  <!-- GRAIN -->
+  <div class="grain" aria-hidden="true"></div>
 
-    <!-- ════════════════════ HEADER ════════════════════ -->
-    <header class="reveal">
+  <!-- CARD -->
+  <main class="page">
+    <div class="card">
 
-      <!-- Status -->
-      <div class="status-badge">
-        <div class="pulse-ring" aria-hidden="true"></div>
-        <span data-pt="DISPONÍVEL_PARA_PROJETOS" data-en="AVAILABLE_FOR_PROJECTS">
-          DISPONÍVEL_PARA_PROJETOS
-        </span>
+      <!-- BANNER -->
+      <div class="banner-wrap" id="bannerWrap">
+        <img class="banner-img" id="bannerImg" src="" alt="" />
+        <div class="banner-fade"></div>
       </div>
 
-      <!-- Name + Typewriter -->
-      <div>
-        <div class="hero-name-wrap">
-          <h1 class="hero-name" data-text="TAAKEN">TAAKEN</h1>
+      <div class="card-body">
+
+        <!-- AVATAR -->
+        <div class="avatar-row">
+          <img class="avatar-img" id="avatarImg" src="" alt="taaken" />
         </div>
-        <div class="hero-desc-wrap" aria-live="polite" aria-atomic="true">
-          <span class="tw-prefix">~/</span>
-          <span id="tw-text"></span><span class="tw-cursor" aria-hidden="true"></span>
+
+        <!-- NAME + STATUS -->
+        <div class="name-row">
+          <h1 class="username">taaken</h1>
+          <div class="status-dot" title="Online" aria-label="Online"></div>
         </div>
-      </div>
 
-      <!-- Social links -->
-      <nav class="socials" aria-label="Social links">
+        <!-- TAGLINE -->
+        <p class="tagline" id="taglineEl" aria-live="polite">
+          <span class="tagline-item active">im a web developer btw</span>
+          <span class="tagline-item">drinking coffee</span>
+          <span class="tagline-item">probably sleeping</span>
+        </p>
 
-        <a href="https://github.com/taakenvx" target="_blank" rel="noopener noreferrer" class="social-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-          </svg>
-          GitHub
-        </a>
+        <!-- BADGES -->
+        <div class="badges-row" id="badgesRow" aria-label="Badges"></div>
 
-        <a href="https://discord.com/users/944982637754318928" target="_blank" rel="noopener noreferrer" class="social-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-          </svg>
-          Discord
-        </a>
+        <div class="divider" aria-hidden="true"></div>
 
-        <a href="https://www.tiktok.com/@t4aken" target="_blank" rel="noopener noreferrer" class="social-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
-          </svg>
-          TikTok
-        </a>
-
-        <a href="mailto:taaken.contato@gmail.com" class="social-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect width="20" height="16" x="2" y="4" rx="2"/>
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-          </svg>
-          <span data-pt="E-mail" data-en="Email">E-mail</span>
-        </a>
-
-      </nav>
-    </header>
-
-    <!-- ════════════════════ ABOUT ════════════════════ -->
-    <section class="reveal" aria-labelledby="about-lbl">
-      <p class="sec-label" id="about-lbl">
-        <span data-pt="// sobre" data-en="// about">// sobre</span>
-      </p>
-      <p class="about-text"
-         data-pt="Desenvolvedor frontend de <strong>nível intermediário</strong>, construindo com <strong>React</strong> e <strong>Next.js</strong>. Estou expandindo meu stack em direção ao full-stack — explorando <strong>Node.js</strong>, <strong>Python</strong> e banco de dados. Acredito em código limpo, boas interfaces e nunca parar de aprender."
-         data-en="Intermediate-level frontend developer building with <strong>React</strong> and <strong>Next.js</strong>. Expanding toward full-stack — exploring <strong>Node.js</strong>, <strong>Python</strong> and databases. I believe in clean code, good interfaces and never stopping to learn.">
-        Desenvolvedor frontend de <strong>nível intermediário</strong>, construindo com <strong>React</strong> e <strong>Next.js</strong>. Estou expandindo meu stack em direção ao full-stack — explorando <strong>Node.js</strong>, <strong>Python</strong> e banco de dados. Acredito em código limpo, boas interfaces e nunca parar de aprender.
-      </p>
-    </section>
-
-    <!-- ════════════════════ STACK ════════════════════ -->
-    <section class="reveal" aria-labelledby="stack-lbl">
-      <p class="sec-label" id="stack-lbl"><span>// stack</span></p>
-
-      <div class="skills-grid" role="list">
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>React</div>
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>Next.js</div>
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>JavaScript</div>
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>TypeScript</div>
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>HTML / CSS</div>
-        <div class="skill-tag" role="listitem"><div class="skill-dot"></div>Git + GitHub</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Node.js</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Python</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Django / Flask</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>PostgreSQL</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>Docker</div>
-        <div class="skill-tag learning" role="listitem"><div class="skill-dot"></div>FastAPI</div>
-      </div>
-
-      <div class="skill-legend">
-        <span>
-          <div class="leg-dot" style="background:var(--accent)"></div>
-          <span data-pt="dominando" data-en="proficient">dominando</span>
-        </span>
-        <span>
-          <div class="leg-dot" style="background:var(--yellow)"></div>
-          <span data-pt="aprendendo" data-en="learning">aprendendo</span>
-        </span>
-      </div>
-    </section>
-
-    <!-- ════════════════════ PROJECTS ════════════════════ -->
-    <section class="reveal" aria-labelledby="projects-lbl">
-      <p class="sec-label" id="projects-lbl">
-        <span data-pt="// projetos" data-en="// projects">// projetos</span>
-      </p>
-
-      <a href="https://taakenvx.github.io/trabalho-escolar/" target="_blank" rel="noopener noreferrer"
-         class="project-card" aria-label="Mundos Além do Horizonte">
-        <div class="project-glint" aria-hidden="true"></div>
-        <div class="project-top">
-          <span class="project-badge">HTML · CSS · JS</span>
-          <svg class="project-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M7 17L17 7M17 7H7M17 7v10"/>
-          </svg>
+        <!-- VIEWS BOX -->
+        <div class="views-box" aria-label="Total views">
+          <div class="views-left">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+            <span class="views-label">Total Views</span>
+          </div>
+          <span class="views-num" id="views-count">—</span>
         </div>
-        <div class="project-body">
-          <h3 class="project-title">Mundos Além do Horizonte</h3>
-          <p class="project-desc"
-             data-pt="Site educacional sobre África do Sul, Austrália e Nova Zelândia. Linha do tempo interativa, seções de cultura, animais icônicos e personalidades de cada país."
-             data-en="Educational website about South Africa, Australia and New Zealand. Interactive timeline, culture sections, iconic animals and famous personalities from each country.">
-            Site educacional sobre África do Sul, Austrália e Nova Zelândia. Linha do tempo interativa, seções de cultura, animais icônicos e personalidades de cada país.
-          </p>
-          <div class="project-stack">
-            <span class="stack-pill">HTML</span>
-            <span class="stack-pill">CSS</span>
-            <span class="stack-pill">JavaScript</span>
-            <span class="stack-pill">Responsive</span>
-          </div>
+
+        <!-- SOCIAL ICON BUTTONS -->
+        <nav class="socials-row" id="socialsRow" aria-label="Social links"></nav>
+
+        <!-- FOOTER -->
+        <div class="card-foot">
+          <span>taaken © 2026</span>
+          <span>web dev</span>
         </div>
-      </a>
-    </section>
-
-    <!-- ════════════════════ CONTACT ════════════════════ -->
-    <section class="reveal" aria-labelledby="contact-lbl">
-      <p class="sec-label" id="contact-lbl">
-        <span data-pt="// contato" data-en="// contact">// contato</span>
-      </p>
-
-      <div class="contact-grid">
-
-        <a href="https://github.com/taakenvx" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-            </svg>
-          </div>
-          <div>
-            <div class="contact-label">GitHub</div>
-            <div class="contact-sub">@taakenvx</div>
-          </div>
-        </a>
-
-        <a href="https://discord.com/users/944982637754318928" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="contact-label">Discord</div>
-            <div class="contact-sub">@taaken</div>
-          </div>
-        </a>
-
-        <a href="https://www.tiktok.com/@t4aken" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
-            </svg>
-          </div>
-          <div>
-            <div class="contact-label">TikTok</div>
-            <div class="contact-sub">@t4aken</div>
-          </div>
-        </a>
-
-        <a href="mailto:taaken.contato@gmail.com" class="contact-item">
-          <div class="contact-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect width="20" height="16" x="2" y="4" rx="2"/>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-            </svg>
-          </div>
-          <div>
-            <div class="contact-label">Email</div>
-            <div class="contact-sub">taaken.contato@gmail.com</div>
-          </div>
-        </a>
 
       </div>
-    </section>
-
+    </div>
   </main>
 
-  <footer>
-    <p class="footer-txt" data-pt="sys.uptime: <span class='hl'>sempre aprendendo</span>" data-en="sys.uptime: <span class='hl'>always learning</span>">
-      sys.uptime: <span class="hl">sempre aprendendo</span>
-    </p>
-    <p class="footer-txt">taaken © 2026</p>
-  </footer>
+<script>
+/* ================================================================
+   CONFIG — edit here
+================================================================ */
+const CONFIG = {
+  username:   "taaken",
+  githubUser: "taakenvx",
+  // avatarUrl: "https://...",   // uncomment for custom avatar
 
-  <!-- Script (deferred so DOM is ready) -->
-  <script src="script.js" defer></script>
+  taglines: [
+    "im a web developer btw",
+    "drinking coffee",
+    "probably sleeping",
+  ],
 
+  /* BACKGROUND — videoUrl OR imageUrl (video wins) */
+  // videoUrl: "https://your-video.mp4",
+  imageUrl: "https://images.unsplash.com/photo-1524741978410-350ba91a70d7?w=1600&q=80",
+
+  /* BANNER — top strip of the card */
+  bannerUrl: "https://images.unsplash.com/photo-1604076913837-52ab5629fde4?w=900&q=80",
+
+  /* MUSIC — .mp3 URL. Plays on first click anywhere. */
+  // musicUrl: "https://your-audio.mp3",
+
+  /* VIEWS base number (increments each visit via localStorage) */
+  baseViews: 1247,
+
+  /* BADGES — verified | dev | og | premium | owner */
+  badges: [
+    { type: "verified", label: "Verified" },
+    { type: "dev",      label: "Dev"      },
+    { type: "og",       label: "OG"       },
+  ],
+
+  socials: [
+    { label: "GitHub",  icon: "github",  url: "https://github.com/taakenvx" },
+    { label: "Discord", icon: "discord", url: "https://discord.com/users/944982637754318928" },
+    { label: "TikTok",  icon: "tiktok",  url: "https://www.tiktok.com/@t4aken" },
+    { label: "Email",   icon: "mail",    url: "mailto:taaken.contato@gmail.com" },
+  ],
+};
+
+/* ================================================================
+   ICONS
+================================================================ */
+const BADGE_ICONS = {
+  verified: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`,
+  dev:      `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0l4.6-4.6L14.6 6 16 7.4 11.4 12l4.6 4.6z"/></svg>`,
+  og:       `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>`,
+  premium:  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L9.5 6H3l4.5 4-2 6L12 13l6.5 3-2-6L21 6h-6.5z"/></svg>`,
+  owner:    `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm2 3h10v-2H7v2z"/></svg>`,
+};
+
+const SOCIAL_ICONS = {
+  github: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>`,
+  discord: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`,
+  tiktok: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.74a4.85 4.85 0 01-1.01-.05z"/></svg>`,
+  mail:   `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+};
+
+/* ================================================================
+   INIT
+================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  initBackground();
+  initAvatar();
+  initBadges();
+  initViews();
+  initSocials();
+  initTaglineCycle();
+  initMusic();
+});
+
+function initBackground() {
+  const video = document.getElementById('bg-video');
+  const image = document.getElementById('bg-image');
+  if (CONFIG.videoUrl) {
+    video.src = CONFIG.videoUrl; video.style.display = 'block'; image.style.display = 'none';
+  } else if (CONFIG.imageUrl) {
+    image.src = CONFIG.imageUrl; image.style.display = 'block'; video.style.display = 'none';
+  } else {
+    video.style.display = image.style.display = 'none';
+  }
+  const banner = document.getElementById('bannerImg');
+  if (CONFIG.bannerUrl) { banner.src = CONFIG.bannerUrl; }
+  else { document.getElementById('bannerWrap').style.display = 'none'; }
+}
+
+function initAvatar() {
+  const img = document.getElementById('avatarImg');
+  img.src = CONFIG.avatarUrl || `https://github.com/${CONFIG.githubUser}.png?size=200`;
+  img.alt = `${CONFIG.username} avatar`;
+}
+
+function initBadges() {
+  document.getElementById('badgesRow').innerHTML = CONFIG.badges.map(b => `
+    <div class="badge ${b.type}" title="${b.label}">
+      ${b.icon || BADGE_ICONS[b.type] || ''}
+      <span>${b.label}</span>
+    </div>
+  `).join('');
+}
+
+function initViews() {
+  const el = document.getElementById('views-count');
+  const key = 'taaken-views';
+  let count = parseInt(localStorage.getItem(key) || '0');
+  if (!count || count < CONFIG.baseViews) count = CONFIG.baseViews;
+  count++;
+  localStorage.setItem(key, String(count));
+  let current = Math.max(0, count - 60);
+  const step = () => {
+    current = Math.min(current + Math.ceil((count - current) * 0.13 + 1), count);
+    el.textContent = current.toLocaleString('en-US');
+    if (current < count) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function initSocials() {
+  document.getElementById('socialsRow').innerHTML = CONFIG.socials.map(s => `
+    <a href="${s.url}" target="_blank" rel="noopener noreferrer"
+       class="soc-btn ${s.icon}" aria-label="${s.label}" data-label="${s.label}">
+      ${SOCIAL_ICONS[s.icon] || ''}
+    </a>
+  `).join('');
+}
+
+function initTaglineCycle() {
+  const items = document.querySelectorAll('#taglineEl .tagline-item');
+  let idx = 0;
+  setInterval(() => {
+    items[idx].classList.remove('active');
+    idx = (idx + 1) % items.length;
+    items[idx].classList.add('active');
+  }, 3200);
+}
+
+function initMusic() {
+  const btn   = document.getElementById('music-btn');
+  const audio = document.getElementById('bg-music');
+  if (!CONFIG.musicUrl) { btn.style.display = 'none'; return; }
+  audio.src = CONFIG.musicUrl;
+  audio.volume = 0.35;
+  let playing = false;
+  const iconM = document.getElementById('icon-mute');
+  const iconP = document.getElementById('icon-play');
+  function tryPlay() {
+    audio.play().then(() => {
+      playing = true; btn.classList.add('active');
+      iconM.style.display = 'none'; iconP.style.display = '';
+    }).catch(() => {});
+  }
+  let started = false;
+  const onFirst = () => {
+    if (started) return; started = true; tryPlay();
+    document.removeEventListener('click', onFirst);
+    document.removeEventListener('keydown', onFirst);
+  };
+  document.addEventListener('click', onFirst);
+  document.addEventListener('keydown', onFirst);
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (playing) {
+      audio.pause(); playing = false; btn.classList.remove('active');
+      iconM.style.display = ''; iconP.style.display = 'none';
+    } else { tryPlay(); }
+  });
+}
+</script>
 </body>
 </html>
