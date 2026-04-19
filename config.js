@@ -23,7 +23,7 @@ const CONFIG = {
 
   // --- BANNER (topo do card) ---
   // Pode ser imagem ou vídeo
-  bannerUrl: "./banners/lae_#0001.jpeg",
+  bannerUrl: "./banners/lae.jpeg",
   // bannerVideoUrl: "https://cdn.example.com/banner.mp4",
 
   // --- AVATAR ---
