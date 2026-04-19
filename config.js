@@ -19,23 +19,22 @@ const CONFIG = {
   // --- BACKGROUND DA PÁGINA ---
   // Cole uma URL de vídeo (.mp4, .webm) OU de imagem. Vídeo tem prioridade.
   // videoUrl: "https://cdn.example.com/bg.mp4",
-  imageUrl: "https://images.unsplash.com/photo-1524741978410-350ba91a70d7?w=1920&q=80",
+  videoUrl: "./banners/sunset.mp4",
 
   // --- BANNER (topo do card) ---
   // Pode ser imagem ou vídeo
-  bannerUrl: "https://images.unsplash.com/photo-1604076913837-52ab5629fde4?w=900&q=80",
+  bannerUrl: "./banners/rain.gif",
   // bannerVideoUrl: "https://cdn.example.com/banner.mp4",
 
   // --- AVATAR ---
-  // Deixe vazio para usar o avatar do GitHub automaticamente
-  // avatarUrl: "https://cdn.example.com/meu-avatar.jpg",
+  avatarUrl: "./banners/pfp.jpeg",
 
   // --- MÚSICA ---
   // URL direta de um .mp3 — toca no primeiro clique do usuário na página
-  // musicUrl: "https://cdn.example.com/musica.mp3",
+  musicUrl: "./banners/Still.mp3",
 
   // --- VIEWS ---
-  // Número base. Sobe +1 a cada visita única (localStorage)
+  // Número base. Sobe +1 a cada visita única
   baseViews: 1247,
 
   // --- BADGES ---
